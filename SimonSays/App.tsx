@@ -6,10 +6,15 @@ import {StackNavigtator} from './navigators';
 import {Provider} from 'react-redux';
 import {store, persistor} from './store';
 import {PersistGate} from 'redux-persist/integration/react';
-import {LogBox} from 'react-native';
+import {I18nManager, LogBox} from 'react-native';
+import Orientation from 'react-native-orientation-locker';
+
+I18nManager.allowRTL(false)
 
 const App = () => {
    useEffect(() => {
+      I18nManager.forceRTL(false)
+      Orientation.lockToPortrait();
       LogBox.ignoreLogs([
          "[react-native-gesture-handler] Seems like you're using an old API with gesture components, check out new Gestures system!",
       ]);

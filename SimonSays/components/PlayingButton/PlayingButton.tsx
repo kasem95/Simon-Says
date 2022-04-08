@@ -19,28 +19,28 @@ const PlayingButton: FC<IPlayingButton> = ({
    const dispatch = useDispatch();
    const {game} = useSelector((state: RootState) => state);
 
-   const _handleOnPress = () => {
+   const _handleOnPress = async () => {
+      dispatch(actions.gameActions.setPressed(true));
+
+      // play sound when press, after sound played successfully player can press one more time
       sound.play(success => {
          if (success) {
-            console.log('successfully finished playing');
-         } else {
-            console.log('playback failed due to audio decoding errors');
+            dispatch(actions.gameActions.setPressed(false));
          }
       });
+
+      // check if color pressed is right
       if (real_color === game.simon_seq[game.step]) {
-         console.log('right');
          dispatch(actions.gameActions.addToPlayerSeq(real_color));
          dispatch(actions.gameActions.incrementStep());
+         // check if player sequence length is same as simon's
+         if (game.player_seq.length + 1 === game.simon_seq.length) {
+            dispatch(actions.gameActions.scoreIncrement());
+         }
       } else {
-         console.log('not right');
          dispatch(actions.gameActions.gameFailed());
          dispatch(actions.gameActions.stopGame());
          navigation.navigate('ScoresScreen');
-         return;
-      }
-
-      if (game.player_seq.length + 1 === game.simon_seq.length) {
-         dispatch(actions.gameActions.scoreIncrement());
       }
    };
 
@@ -54,15 +54,13 @@ const PlayingButton: FC<IPlayingButton> = ({
             },
          ]}
          onTouchStart={() =>
-            !disabled && setColor(borderColor)
+            !disabled && !game.pressed && setColor(borderColor)
          }
-         onTouchEnd={() =>
-            !disabled && setColor(real_color)
-         }
-         disabled={disabled}
+         onTouchEnd={() => !disabled && !game.pressed && setColor(real_color)}
+         disabled={disabled || game.pressed}
          onPress={_handleOnPress}
          android_disableSound>
-         <View style={invertedRadius}></View>
+         <View style={invertedRadius} />
       </Pressable>
    );
 };

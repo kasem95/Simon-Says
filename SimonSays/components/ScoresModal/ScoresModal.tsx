@@ -1,6 +1,5 @@
 import {
    Text,
-   Modal,
    TextInput,
    TouchableOpacity,
    View,
@@ -11,13 +10,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {RootState, actions} from '../../store';
 import styles from './styles';
 import {IScoresModal} from '../../interfacesAndTypes';
+import Modal from 'react-native-modal';
 
 const ScoresModal: FC<IScoresModal> = ({open, setOpen}) => {
    const dispatch = useDispatch();
    const {scoreState, game} = useSelector((state: RootState) => state);
    const [name, set_name] = useState(scoreState.player_name);
    const [error, set_error] = useState('');
-   const {height} = useWindowDimensions();
+   const {height, width} = useWindowDimensions();
 
    const _handleTextChange = (t: string) => {
       set_name(t);
@@ -41,14 +41,30 @@ const ScoresModal: FC<IScoresModal> = ({open, setOpen}) => {
    };
 
    return (
-      <Modal animationType="slide" transparent={true} visible={open}>
-         <View style={[styles.modal, {height: height / 2}]}>
-            <Text>Enter your name</Text>
-            <TextInput value={name} onChangeText={_handleTextChange} />
-            <TouchableOpacity onPress={_handleOnPress}>
-               <Text>Submit</Text>
-            </TouchableOpacity>
-            <Text style={styles.error}>{error}</Text>
+      <Modal
+         isVisible={open}
+         animationInTiming={1000}
+         animationOutTiming={1000}
+         backdropTransitionInTiming={800}
+         backdropTransitionOutTiming={800}
+         backdropOpacity={0.2}
+         deviceHeight={height}
+         deviceWidth={width}>
+         <View style={styles.modalContent}>
+            <Text style={styles.title}>Enter your name</Text>
+            <View style={[styles.textinputWrapper, {width: width - 150}]}>
+               <TextInput
+                  style={styles.textinput}
+                  value={name}
+                  onChangeText={_handleTextChange}
+               />
+            </View>
+            <View style={styles.submit_error_wrapper}>
+               <TouchableOpacity onPress={_handleOnPress} style={styles.button}>
+                  <Text style={styles.button_title}>Submit</Text>
+               </TouchableOpacity>
+               <Text style={styles.error}>{error}</Text>
+            </View>
          </View>
       </Modal>
    );

@@ -7,9 +7,9 @@ import {IGameScreen} from '../../interfacesAndTypes';
 const GameScreen: FC<IGameScreen> = ({navigation}) => {
    return (
       <View style={styles.container}>
-         {/* <Text>SIMON SAYS</Text> */}
          <Image
             source={require('../../assets/imgs/SimonSays.png')}
+            style={styles.title}
          />
          <GameComponent navigation={navigation} />
       </View>

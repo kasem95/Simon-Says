@@ -1,4 +1,11 @@
-import {View, Text, ColorValue, Animated, Easing} from 'react-native';
+import {
+   View,
+   Text,
+   ColorValue,
+   Animated,
+   Easing,
+   useWindowDimensions,
+} from 'react-native';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import styles from './styles';
 import PlayingButton from '../PlayingButton/PlayingButton';
@@ -20,7 +27,7 @@ const YELLOW_SOUND = 'https://s3.amazonaws.com/freecodecamp/simonSound4.mp3';
 
 const GameComponent: FC<IGameComponent> = ({navigation}) => {
    const dispatch = useDispatch();
-   const {start, score, simon_seq, failed, simon_is_talking} = useSelector(
+   const {start, score, simon_seq, simon_talking} = useSelector(
       (state: RootState) => state.game,
    );
    const [press_red_color, set_press_red_color] = useState<ColorValue>('red');
@@ -32,6 +39,7 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
       useState<ColorValue>('yellow');
    const [sounds, setSounds] = useState<Sound[]>([]);
    const spinValue = useRef<Animated.Value>(new Animated.Value(0)).current;
+   const {width, height} = useWindowDimensions();
 
    const sleep = (ms: number) => {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -39,8 +47,8 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
 
    Sound.setCategory('Playback');
 
+   // load buttons sounds
    useEffect(() => {
-      console.log('sounds-useffect');
       setSounds([
          new Sound(RED_SOUND, Sound.MAIN_BUNDLE, err => {
             if (err) {
@@ -74,6 +82,7 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
    }, []);
 
    useEffect(() => {
+      // spinning animation
       const animation = Animated.loop(
          Animated.timing(spinValue, {
             toValue: 1,
@@ -82,17 +91,17 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
             useNativeDriver: true,
          }),
       );
+      // start spinning
       if (!start) {
          animation.start();
       } else {
+         // stop spinning
          animation.stop();
          animation.reset();
       }
    }, [spinValue, start]);
 
    useEffect(() => {
-      console.log(simon_seq);
-
       // function that shows sequence step color on its button and plays color's sound
       const showColorAndPlaySound = (
          color: ColorValue,
@@ -101,13 +110,7 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
          colorSeter: (c: ColorValue) => void,
       ) => {
          colorSeter(second_color);
-         sound.play(success => {
-            if (success) {
-               console.log('successfully finished playing');
-            } else {
-               console.log('playback failed due to audio decoding errors');
-            }
-         });
+         sound.play();
          const time_out = setTimeout(() => {
             colorSeter(color);
             clearTimeout(time_out);
@@ -115,7 +118,7 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
       };
 
       const simon_says = async () => {
-         dispatch(actions.gameActions.simonStart());
+         dispatch(actions.gameActions.setSimonTalking(true));
          // loop through all simon sequence and show player the color and play color's sound
          for (let i = 0; i < simon_seq.length; i++) {
             await sleep(1000);
@@ -189,10 +192,10 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
          }
 
          await sleep(1000);
-         dispatch(actions.gameActions.simonStop());
+         dispatch(actions.gameActions.setSimonTalking(false));
       };
 
-      if (start && !failed && !simon_is_talking) {
+      if (start) {
          simon_says();
       }
 
@@ -209,30 +212,61 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
    });
 
    return (
-      <View>
-         <Animated.View style={[styles.game, {transform: [{rotate: spin}]}]}>
+      <View
+         style={[
+            styles.gameWrapper,
+            {
+               marginBottom: height / 8,
+            },
+         ]}>
+         <Animated.View
+            style={[
+               styles.game,
+               {
+                  transform: [{rotate: spin}],
+                  width: width - 100,
+                  height: width - 100,
+                  borderRadius: width - 100,
+               },
+            ]}>
             <View style={styles.colors_row}>
                <PlayingButton
                   real_color={'green'}
                   color={press_green_color}
-                  disabled={!start || failed || simon_is_talking}
+                  disabled={!start || simon_talking} // player can't press button if game not started yet or while simon is saying
                   borderColor={DARK_GREEN}
                   setColor={set_press_green_color}
                   sound={sounds[2]}
                   navigation={navigation}
-                  styles={styles.green_button}
-                  invertedRadius={styles.green_button_inverted}
+                  styles={{
+                     ...styles.green_button,
+                     borderTopLeftRadius: (width - 100) / 2,
+                  }}
+                  invertedRadius={{
+                     ...styles.green_button_inverted,
+                     height: width / 10,
+                     width: width / 10,
+                     borderTopLeftRadius: (width - 100) / 2,
+                  }}
                />
                <PlayingButton
                   real_color={'red'}
                   color={press_red_color}
-                  disabled={!start || failed || simon_is_talking}
+                  disabled={!start || simon_talking} // player can't press button if game not started yet or while simon is saying
                   borderColor={DARK_RED}
                   setColor={set_press_red_color}
                   sound={sounds[0]}
                   navigation={navigation}
-                  styles={styles.red_button}
-                  invertedRadius={styles.red_button_inverted}
+                  styles={{
+                     ...styles.red_button,
+                     borderTopRightRadius: (width - 100) / 2,
+                  }}
+                  invertedRadius={{
+                     ...styles.red_button_inverted,
+                     height: width / 10,
+                     width: width / 10,
+                     borderTopRightRadius: (width - 100) / 2,
+                  }}
                />
             </View>
 
@@ -240,35 +274,60 @@ const GameComponent: FC<IGameComponent> = ({navigation}) => {
                <PlayingButton
                   real_color={'yellow'}
                   color={press_yellow_color}
-                  disabled={!start || failed || simon_is_talking}
+                  disabled={!start || simon_talking} // player can't press button if game not started yet or while simon is saying
                   borderColor={DARK_YELLOW}
                   setColor={set_press_yellow_color}
                   sound={sounds[3]}
                   navigation={navigation}
-                  styles={styles.yellow_button}
-                  invertedRadius={styles.yellow_button_inverted}
+                  styles={{
+                     ...styles.yellow_button,
+                     borderBottomLeftRadius: (width - 100) / 2,
+                  }}
+                  invertedRadius={{
+                     ...styles.yellow_button_inverted,
+                     height: width / 10,
+                     width: width / 10,
+                     borderBottomLeftRadius: (width - 100) / 2,
+                  }}
                />
 
                <PlayingButton
                   real_color={'blue'}
                   color={press_blue_color}
-                  disabled={!start || failed || simon_is_talking}
+                  disabled={!start || simon_talking} // player can't press button if game not started yet or while simon is saying
                   borderColor={DARK_BLUE}
                   setColor={set_press_blue_color}
                   sound={sounds[1]}
                   navigation={navigation}
-                  styles={styles.blue_button}
-                  invertedRadius={styles.blue_button_inverted}
+                  styles={{
+                     ...styles.blue_button,
+                     borderBottomRightRadius: (width - 100) / 2,
+                  }}
+                  invertedRadius={{
+                     ...styles.blue_button_inverted,
+                     height: width / 10,
+                     width: width / 10,
+                     borderBottomRightRadius: (width - 100) / 2,
+                  }}
                />
             </View>
          </Animated.View>
-         <View style={[styles.play, !start && {paddingLeft: 10}]}>
+         <View
+            style={[
+               styles.play,
+               {
+                  width: width / 6,
+                  height: width / 6,
+                  borderRadius: width / 6 / 2,
+               },
+            ]}>
             {!start ? (
                <Icon
                   name="play"
-                  size={50}
+                  size={width / 10}
                   color="white"
                   onPress={_handleStart}
+                  style={styles.playIcon}
                />
             ) : (
                <Text style={styles.score}>{score}</Text>

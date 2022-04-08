@@ -16,7 +16,24 @@ const StackNavigtator = () => {
          <Stack.Screen
             name="ScoresScreen"
             component={ScoresScreen}
-            //options={{headerShown: false}}
+            options={{
+               headerTitle: 'Scores Screen',
+               headerTitleStyle: {
+                  fontSize: 24,
+                  textAlign: 'left',
+               },
+               headerStyle: {
+                  shadowColor: '#000',
+                  shadowOffset: {
+                     width: 0,
+                     height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  elevation: 5,
+                  height: 80,
+               },
+            }}
          />
       </Stack.Navigator>
    );

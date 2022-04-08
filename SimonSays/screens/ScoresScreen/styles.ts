@@ -6,10 +6,16 @@ const styles = StyleSheet.create({
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      backgroundColor: 'white',
    },
-   list: {
-      
+   list: {},
+   seperator: {
+      height: 50,
+   },
+   empty: {
+      fontSize: 30,
+      textAlign: 'center',
+      alignSelf: 'center',
+      color: 'black',
    },
 });
 
