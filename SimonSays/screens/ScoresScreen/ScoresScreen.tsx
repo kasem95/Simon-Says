@@ -11,6 +11,7 @@ import {Score, ScoresModal} from '../../components';
 import {IScoresScreen, ScoreType} from '../../interfacesAndTypes';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const ScoresScreen: FC<IScoresScreen> = () => {
    const [openModal, setOpenModal] = useState(true);
@@ -40,7 +41,7 @@ const ScoresScreen: FC<IScoresScreen> = () => {
    };
 
    return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
          <ScoresModal open={openModal} setOpen={setOpenModal} />
          <FlatList
             data={sortScores()}
@@ -54,7 +55,7 @@ const ScoresScreen: FC<IScoresScreen> = () => {
                <Text style={styles.empty}>Scores is empty</Text>
             )}
          />
-      </View>
+      </SafeAreaView>
    );
 };
 
