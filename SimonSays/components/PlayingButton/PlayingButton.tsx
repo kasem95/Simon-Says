@@ -1,31 +1,69 @@
-import {Pressable, useWindowDimensions} from 'react-native';
-import React, {FC, useState} from 'react';
+import {Pressable, View} from 'react-native';
+import React, {FC} from 'react';
 import _styles from './styles';
-import {IPlayingButton} from '../../interfaces';
+import {IPlayingButton} from '../../interfacesAndTypes';
+import {useDispatch, useSelector} from 'react-redux';
+import {actions, RootState} from '../../store';
 
 const PlayingButton: FC<IPlayingButton> = ({
    color,
-   press_color,
    styles,
    disabled,
+   borderColor,
+   setColor,
+   real_color,
+   sound,
+   navigation,
+   invertedRadius,
 }) => {
-   const [_color, setColor] = useState(color);
-   const {width} = useWindowDimensions();
+   const dispatch = useDispatch();
+   const {game} = useSelector((state: RootState) => state);
+
+   const _handleOnPress = () => {
+      sound.play(success => {
+         if (success) {
+            console.log('successfully finished playing');
+         } else {
+            console.log('playback failed due to audio decoding errors');
+         }
+      });
+      if (real_color === game.simon_seq[game.step]) {
+         console.log('right');
+         dispatch(actions.gameActions.addToPlayerSeq(real_color));
+         dispatch(actions.gameActions.incrementStep());
+      } else {
+         console.log('not right');
+         dispatch(actions.gameActions.gameFailed());
+         dispatch(actions.gameActions.stopGame());
+         navigation.navigate('ScoresScreen');
+         return;
+      }
+
+      if (game.player_seq.length + 1 === game.simon_seq.length) {
+         dispatch(actions.gameActions.scoreIncrement());
+      }
+   };
 
    return (
       <Pressable
-        ref={}
          style={[
-            styles || _styles.button,
             {
-               backgroundColor: _color,
-               borderColor: press_color,
+               ...(styles || _styles.button),
+               backgroundColor: color,
+               borderColor: borderColor,
             },
          ]}
-         onTouchStart={() => setColor(press_color)}
-         onTouchEnd={() => setColor(color)}
+         onTouchStart={() =>
+            !disabled && setColor(borderColor)
+         }
+         onTouchEnd={() =>
+            !disabled && setColor(real_color)
+         }
          disabled={disabled}
-      />
+         onPress={_handleOnPress}
+         android_disableSound>
+         <View style={invertedRadius}></View>
+      </Pressable>
    );
 };
 

@@ -3,13 +3,11 @@ import {StyleSheet} from 'react-native';
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       alignItems: 'center',
-      backgroundColor: 'white',
-   },
-   list: {
-      
+      padding: 5,
+      borderBottomWidth: 2,
    },
 });
 

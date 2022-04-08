@@ -1,6 +1,10 @@
 import {configureStore} from '@reduxjs/toolkit';
 import gameReducer, {gameActions} from './features/gameSlice';
-import scoreReducer, {change_player_name} from './features/scoreSlice';
+import scoreReducer, {
+   addScore,
+   change_player_name,
+   setLoading,
+} from './features/scoreSlice';
 import {persistStore, persistReducer} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -28,5 +32,7 @@ export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export const actions = {
    change_player_name: change_player_name,
+   addScore: addScore,
    gameActions: gameActions,
+   setLoading: setLoading,
 };
