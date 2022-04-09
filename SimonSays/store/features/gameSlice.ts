@@ -9,7 +9,6 @@ const gameSlice = createSlice({
       start: false,
       simon_talking: false,
       step: 0,
-      pressed: false,
    },
    name: 'game',
    reducers: {
@@ -44,9 +43,6 @@ const gameSlice = createSlice({
       },
       resetScore: state => {
          state.score = 0;
-      },
-      setPressed: (state, action: PayloadAction<boolean>) => {
-         state.pressed = action.payload;
       },
       setSimonTalking: (state, action: PayloadAction<boolean>) => {
          state.simon_talking = action.payload;
