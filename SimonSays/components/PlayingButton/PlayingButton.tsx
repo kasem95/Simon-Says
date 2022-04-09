@@ -20,15 +20,9 @@ const PlayingButton: FC<IPlayingButton> = ({
    const {game} = useSelector((state: RootState) => state);
 
    const _handleOnPress = async () => {
+      // stop any sound playing and play this sound
       sound.stop();
-      dispatch(actions.gameActions.setPressed(true));
-
-      // play sound when press, after sound played successfully player can press one more time
-      sound.play(success => {
-         if (success) {
-            dispatch(actions.gameActions.setPressed(false));
-         }
-      });
+      sound.play();
 
       // check if color pressed is right
       if (real_color === game.simon_seq[game.step]) {
