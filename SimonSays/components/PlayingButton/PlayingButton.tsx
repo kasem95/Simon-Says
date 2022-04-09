@@ -20,6 +20,7 @@ const PlayingButton: FC<IPlayingButton> = ({
    const {game} = useSelector((state: RootState) => state);
 
    const _handleOnPress = async () => {
+      sound.stop();
       dispatch(actions.gameActions.setPressed(true));
 
       // play sound when press, after sound played successfully player can press one more time
@@ -54,10 +55,10 @@ const PlayingButton: FC<IPlayingButton> = ({
             },
          ]}
          onTouchStart={() =>
-            !disabled && !game.pressed && setColor(borderColor)
+            !disabled && setColor(borderColor)
          }
-         onTouchEnd={() => !disabled && !game.pressed && setColor(real_color)}
-         disabled={disabled || game.pressed}
+         onTouchEnd={() => !disabled && setColor(real_color)}
+         disabled={disabled}
          onPress={_handleOnPress}
          android_disableSound>
          <View style={invertedRadius} />
