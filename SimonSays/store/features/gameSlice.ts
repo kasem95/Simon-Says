@@ -1,15 +1,17 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {SequenceType} from '../../interfacesAndTypes';
+import {IGameState, SequenceType} from '../../interfacesAndTypes';
+
+const initialState: IGameState = {
+   score: 0,
+   simon_seq: [],
+   player_seq: [],
+   start: false,
+   simon_talking: false,
+   step: 0,
+};
 
 const gameSlice = createSlice({
-   initialState: {
-      score: 0,
-      simon_seq: [] as SequenceType[],
-      player_seq: [] as SequenceType[],
-      start: false,
-      simon_talking: false,
-      step: 0,
-   },
+   initialState: initialState,
    name: 'game',
    reducers: {
       startGame: state => {

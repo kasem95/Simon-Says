@@ -1,12 +1,14 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { ScoreType } from '../../interfacesAndTypes';
+import {IScoreState, ScoreType} from '../../interfacesAndTypes';
+
+const initialState: IScoreState = {
+   player_name: 'player',
+   scores: [],
+   loading: false,
+};
 
 const scoreSlice = createSlice({
-   initialState: {
-      player_name: 'player',
-      scores: [] as ScoreType[],
-      loading: false,
-   },
+   initialState: initialState,
    name: 'scoreState',
    reducers: {
       change_player_name: (state, action: PayloadAction<string>) => {

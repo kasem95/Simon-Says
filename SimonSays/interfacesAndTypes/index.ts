@@ -7,6 +7,8 @@ import IGameScreen from './GameScreen';
 import IScoresScreen from './ScoresScreen';
 import IScore from './ScoreInterface';
 import {ScoreType} from './ScoreType';
+import IGameState from './GameStateInterface';
+import IScoreState from './ScoreStateInterface';
 
 export type {
    StackNavigtatorParams,
@@ -18,4 +20,6 @@ export type {
    IScoresScreen,
    IScore,
    ScoreType,
+   IGameState,
+   IScoreState,
 };
